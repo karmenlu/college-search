@@ -1,2 +1,2 @@
 # College-Search React App
-To run, `npm start`.
+To run, clone the repository and `npm start`.
