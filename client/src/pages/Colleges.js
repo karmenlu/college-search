@@ -2,14 +2,15 @@ import React from 'react';
 import '../App.css';
 import CollegeCard from '../components/CollegeCard';
 import { createSorter } from '../utils/Sort';
+import Axios from 'axios';
 
-const MASchools = require('../data/ma_schools.json');
+const API_URL = 'http://localhost:3001';
 
 class Colleges extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: MASchools,
+            data: [],
             lon: -71.09667,
             lat: 42.34212,
         };
@@ -26,11 +27,23 @@ class Colleges extends React.Component {
         }]
     }
 
+    componentDidMount() {
+        const schoolsRequest = async () => {
+            try {
+                const schoolsResponse = await Axios.get(API_URL + '/schools');
+                this.setState({data: schoolsResponse.data})
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        schoolsRequest();
+    }
+
     sortData(sortType) {
         const sorters = [];
         let [sortProperty, sortDirection] = sortType.split(':');
         sorters.push({property: sortProperty, direction: sortDirection});
-        const filteredData =  this.computeNewDistances(MASchools).filter((school) => school[sortProperty] != 'NULL'); 
+        const filteredData =  this.computeNewDistances(this.state.data).filter((school) => school[sortProperty] != 'NULL'); 
 
         if (filteredData && filteredData.length) {
             const sorted = [...filteredData].sort(createSorter(...sorters))
